@@ -127,19 +127,19 @@
   {%- macro modo_ospite() -%}
     {% if is_state ('input_boolean.guest_mode', 'on') %}
       {% set modo_ospite = [
-        "Sembra che abbiamo un ospite in casa. ",
-        "Abbiamo un ospite. Attiverò la modalità ospite. ",
-        "Ho attivato la modalità ospite per la visita della nostra casa. ",
-        "Passo alla modalità ospite. ",
-        "Non capita spesso di avere ospiti, lascia che prepari la casa per la tua visita. "
+        "yippii, sembra che abbiamo un ospite in casa. ",
+        "toc toc, abbiamo un ospite. Attiverò la modalità ospite. ",
+        "badabim badabum, ho attivato la modalità ospite per la visita della nostra casa. ",
+        "Ok, passo alla modalità ospite. ",
+        "uh la là. Non capita spesso di avere ospiti, lascia che prepari la casa per la tua visita. "
       ] %}
     {% else %}
       {% set modo_ospite = [
-        "Sembra che il nostro ospite se ne sia andato, disabiliterò la modalità ospite. ",
-        "Consentimi di disabilitare la modalità ospite poiché non ci sono più ospiti. ",
-        "Ho disabilitato la modalità ospite e ho ripreso le normali operazioni. ",
-        "Disabilito la modalità ospite. ",
-        "Dal momento che non ci sono più ospiti mi permetto di disabilitare la modalità ospite. "
+        "grande Giove, sembra che il nostro ospite se ne sia andato, disabiliterò la modalità ospite. ",
+        "vabbè, consentimi di disabilitare la modalità ospite poiché non ci sono più ospiti. ",
+        "puoi scommetterci! Ho disabilitato la modalità ospite e ho ripreso le normali operazioni. ",
+        "ricevuto, Disabilito la modalità ospite. hip hip hurrà.",
+        "fiuu, dal momento che non ci sono più ospiti mi permetto di disabilitare la modalità ospite. "
       ] %}
     {% endif %}
     {{ modo_ospite|random }}
@@ -192,11 +192,11 @@
 
   {%- macro avviso_pioggia(cattivo_tempo) -%}
     {% set pioggia = [
-      evento ~ " ci sarà " ~ sensore_pioggia ~ " di pioggia. ",
-      evento ~ " Prevedo " ~ sensore_pioggia ~ " di pioggia. ",
-      " Penso che" ~ evento ~ " ci sarà " ~ sensore_pioggia ~ " di pioggia. "
+      evento ~ " ci sarà " ~ sensore_pioggia ~ " di pioggia.",
+      evento ~ " Prevedo " ~ sensore_pioggia ~ " di pioggia.",
+      "Penso che " ~ evento ~ " ci sarà " ~ sensore_pioggia ~ " di pioggia."
     ] %}
-    {{ pioggia | random }}{{ cattivo_tempo }}
+    {{pioggia|random}} {{cattivo_tempo}}
   {%- endmacro -%}
 
   {%- macro controllo_luci() -%}
@@ -323,9 +323,10 @@
   {% if call_controllo_luci == 1 %} {{ controllo_luci() }} {% endif %}
   {% if call_controllo_prese == 1 %} {{ controllo_prese() }} {% endif %}
   {% if call_controllo_infissi == 1 %} {{ controllo_infissi() }} {% endif %}
-  {% if call_avviso_pioggia == 1 %} {{ avviso_pioggia(cattivo_tempo()) }} {% endif %}
+  {% if call_avviso_pioggia == 1 %} {{ avviso_pioggia(cattivo_tempo())}} {% endif %}
   {# + Contenuto del messaggio passato tramite automazioni/script + #}
   {{ message }}
+
   {% if call_arrivederci == 1 %} {{ arrivederci() }} {% endif %}
   {% if call_spegni == 1 %} {{ spegni() }} {% endif %}
   {% if call_nuovo_dispositivo == 1 %} {{ nuovo_dispositivo(introduzione()) }} {% endif %}

@@ -18,11 +18,12 @@ automation:
     - service: script.my_notify
       data_template:
         title: "Home Assistant Start!"
-        message: >-
-          Il sistema è operativo!.
+        message: |
+          Il sistema è operativo!. 👍
           {{states('sensor.ha_start')}}
         message_tts: >-
           Il sistema è operativo!.
+        alexa_voice: Giorgio
 
   #----------------------------------------------------------------------------------------------------#
   # Home Assistant Shutdown
@@ -45,7 +46,7 @@ automation:
     action:
       - service: script.my_notify
         data:
-          title: "Home Assistant Shutdown!"
+          title: "👋 Home Assistant Shutdown!"
           call_no_annuncio: 1
           call_arrivederci: 1
           call_spegni: 1
@@ -54,7 +55,8 @@ automation:
           # notify: 0
 
   #----------------------------------------------------------------------------------------------------#
-  # Accesso Fallito # Banned IP
+  # Accesso Fallito # Banned IP persistent_notification.ip_ban title: Banning IP address
+  # message: Too many login attempts from xxx.xxx.xxx.xxx
   #----------------------------------------------------------------------------------------------------#
   - id: accesso_fallito_hub
     alias: "Accesso fallito"
@@ -71,15 +73,12 @@ automation:
           title: "Home Assistant Accesso Fallito. "
           message_tts: "Attenzione. Accesso Fallito"
           # message: "{{ states.persistent_notification.http_login.attributes.message }}"
-          message: "Tentativo di accesso o richiesta con autenticazione non valida."
+          message: "⛔ Tentativo di accesso o richiesta con autenticazione non valida."
           link: >-
             http://www.ip-tracker.org/locator/ip-lookup.php?ip={{states.persistent_notification.http_login.attributes.message.split('from ')[1]}}
           # notify: alert
           priority: 1
 
-      #- service: persistent_notification.dismiss
-        #data:
-          #notification_id: 'http_login'
       - service: notify.pushover
         data_template: 
           title: "Home Assistant Accesso Fallito"
@@ -91,6 +90,10 @@ automation:
             #attachment: "http://example.com/image.png"
             #sound: pianobar
             #device: pixel
+
+      #- service: persistent_notification.dismiss
+        #data:
+          #notification_id: 'http_login'
 
   #----------------------------------------------------------------------------------------------------#
   # Nuova versione di Home Assistant
@@ -107,7 +110,7 @@ automation:
     action:
       - service: script.my_notify
         data_template:
-          title: "Nuovo Aggiornamento Home Assistant"
+          title: "🆕 Nuovo Aggiornamento Home Assistant"
           message: "Home Assistant {{state_attr('binary_sensor.updater','newest_version')}} è disponibile."
           link: "{{state_attr('binary_sensor.updater','release_notes')}}"
 
@@ -235,7 +238,7 @@ automation:
         data:
           title: New device
         data_template:
-          message: >
+          message: |
             New device: {{trigger.event.data.host_name}}
             entity: {{trigger.event.data.entity_id}}
             mac: ({{ trigger.event.data.mac }})
@@ -293,7 +296,7 @@ automation:
       - service: script.my_notify
         data_template:
           call_avviso_pioggia: 1
-          evento: "Dopo Lavoro "
+          evento: "Dopo Lavoro"
           alexa_type: "tts"
           sensore_pioggia: >-
             {{states.sensor.dark_sky_precip_intensity.state|round(2)~" "~states.sensor.dark_sky_precip_intensity.attributes.unit_of_measurement}}
@@ -320,13 +323,13 @@ automation:
       - service: script.my_notify
         data_template:
           alexa_type: "tts"
-          message: >
-            Sono le {{states('sensor.time')}},
-            ed è {{states('sensor.dark_sky_summary')}}.
-            La temperatura esterna è di {{states('sensor.dark_sky_apparent_temperature')|int|string }} gradi,
-            mentre la temperatura interna è di {{states('sensor.temperatura_media') |int|string }} gradi. 
-            *Previsioni.* {{ states.sensor.dark_sky_hourly_summary.state }}. 
-            *Citazione. * {{state_attr('sensor.wikiquote', 'entries')[-1].summary|striptags}}.
+          message: |
+            Sono le {{states('sensor.time')}}, 
+            ed è {{states('sensor.dark_sky_summary')}}. 
+            La temperatura esterna è di {{states('sensor.dark_sky_apparent_temperature')|int}} gradi, 
+            mentre la temperatura interna è di {{states('sensor.temperatura_media') |int}} gradi. 
+            *Previsioni.* {{states.sensor.dark_sky_hourly_summary.state}} 
+            *Citazione.* {{state_attr('sensor.wikiquote', 'entries')[-1].summary|striptags}}.
 
   #----------------------------------------------------------------------------------------------------#
   # SEGUIMI - Imposta il Media Player in automatico
@@ -378,11 +381,14 @@ automation:
       data_template:
         mute: 1
         title: Nuovo repository in HACS
-        message: >-
+        message: |
+          Nuova Repository aggiunta. 
+        link: |
           {% set repo = trigger.event.data.repository %}
           {% set id = trigger.event.data.repository_id %}
-          [{{ repo }}](/hacs/repository/{{ id }})
-          è stato appena aggiunto a HACS.
+          {{repo}} + {{id}}
+          [{{repo}}](https://github.com/{{repo}})
+
 
   #----------------------------------------------------------------------------------------------------#
   # HACS - Updates - by Joakim Sørensen (ludeeus)
@@ -401,15 +407,19 @@ automation:
       service: script.my_notify
       data_template:
         # mute: 1
-        title: Aggiornamenti in sospeso in HACS
+        call_no_annuncio: 1
+        title: >-
+          Aggiornamenti HACS ({{states('sensor.hacs')}})
         message: >-
-          {% for repo in state_attr(trigger.entity_id, 'repositories') %}
-            *{{ repo.display_name }}* _{{ repo["installed version"] }}_ -> _{{ repo["available version"] }}_
-          {% endfor %}
+          Nuovi Aggiornamenti HACS: 
         message_tts: >-
+          Ci sono {{states('sensor.hacs')}} aggiornamenti in HACS.
+        link: |-
           {% for repo in state_attr(trigger.entity_id, 'repositories') %}
-            Nuova versione per {{ repo.display_name }}.
+          [{{repo.display_name}}](https://github.com/{{repo.name}}) {{repo["installed version"]}} -> {{repo["available version"]}}
           {% endfor %}
+
+#            https://github.com/{{repo.name|replace("_","\_")}}
 
   #----------------------------------------------------------------------------------------------------#
   # HACS - Updater
