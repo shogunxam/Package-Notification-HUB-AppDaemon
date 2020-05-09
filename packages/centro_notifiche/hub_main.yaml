@@ -14,7 +14,7 @@ homeassistant:
     package.node_anchors:
       customize: &customize
         package: Centro Notifiche
-        version: Main 2.3
+        version: Main 2.5
         author: Caio & Gianpi
         site: www.hassiohelp.eu
       expose: &expose
@@ -387,6 +387,10 @@ script:
             {{file}}
           caption: >-
             {{caption}}
+          alexa: >-
+            {{alexa}}
+          alexa_voice: >-
+            {{alexa_voice}}
           alexa_type: >-
             {{alexa_type}}
           alexa_method: >-
