@@ -21,6 +21,10 @@ homeassistant:
       <<: *customize
       friendly_name: Alexa
       icon: mdi:amazon-alexa
+    input_select.alexa_voice:
+      <<: *customize
+      friendly_name: Amazon Polly voice
+      icon: mdi:account-tie-voice-outline
     input_select.notification_media_player_alexa:
       <<: *customize
       friendly_name: Sorgente Alexa
@@ -58,6 +62,23 @@ input_select:
     options:
       - TTS
       - Announce
+  alexa_voice:
+    options: [
+      'Alexa',
+      'Ivy', 'Joanna', 'Joey', 'Justin', 'Kendra', 'Kimberly', 'Matthew', 'Salli',
+      'Nicole', 'Russell',
+      'Amy', 'Brian', 'Emma',
+      'Aditi', 'Raveena',
+      'Chantal',
+      'Celine', 'Lea', 'Mathieu',
+      'Hans', 'Marlene', 'Vicki',
+      'Aditi',
+      'Carla', 'Giorgio', 'Bianca',
+      'Mizuki', 'Takumi',
+      'Vitoria', 'Camila', 'Ricardo',
+      'Penelope', 'Lupe', 'Miguel',
+      'Conchita', 'Enrique', 'Lucia',
+      'Mia']
 
 #######################################-#######################################
 ##                                  SENSOR
@@ -89,11 +110,24 @@ automation:
     trigger:
       - platform: state
         entity_id: sensor.period_of_day_volume
+      - platform: homeassistant
+        event: start
     action:
+      - service: notify.alexa_media
+        data:
+          data:
+            type: tts
+          target: group.media_player_alexa
+          message: >
+            <speak>
+            <break time="4s"/>
+            <prosody volume="silent">volume</prosody>
+            </speak>
+      - delay: "00:00:02"
       - service: media_player.volume_set
         data_template:
           entity_id: >
-            group.media_player_alexa
+            {{state_attr('group.media_player_alexa', 'entity_id')|join(', ')}} 
           volume_level: >
             {{ states('sensor.period_of_day_volume') | float | round(2) }}
       - service: input_number.set_value
@@ -106,3 +140,4 @@ automation:
           entity_id: input_number.default_restore_volume
           value: >
             {{ states('sensor.period_of_day_volume') | float * 100 }}
+#            {{expand('group.media_player_alexa')|join(', ', attribute='entity_id')}}
