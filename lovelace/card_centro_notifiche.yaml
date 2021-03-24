@@ -1,6 +1,7 @@
 type: entities
 title: Centro Notifiche
 show_header_toggle: false
+state_color: true
 entities:
   - type: section
     label: Monitor
